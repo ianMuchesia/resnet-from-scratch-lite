@@ -1,12 +1,25 @@
 
-resnet-from-scratch-lite
+# ResNet from Scratch Lite
 
-Minimal educational implementation of ResNet-style blocks for learning and experimentation.
+A minimal, educational implementation of ResNet architecture with residual blocks for CIFAR-10 classification.
 
-Contents:
-- `src/` — implementation files (single-file ResNet block)
-- `notebooks/` — experiments and demos
+## Features
 
-Usage: open the notebooks or import `src/resnet_block.py` in your experiments.
+- **ResidualBlock** (`resnet_block.py`): Core residual block with skip connections and batch normalization
+- **MiniResNet** (`resnet_model.py`): Lightweight 3-layer ResNet model for CIFAR-10 (10 classes)
+- **Training Pipeline** (`train_resnet.py`): Full training loop with CIFAR-10 dataset (10k subset) and metrics logging
+- **Validation** (`validation.py`): Model evaluation utility
 
-License: MIT-style for personal and educational use.
+## Quick Start
+
+```bash
+python -m src.train_resnet
+```
+
+Trains for 15 epochs on CIFAR-10 subset, logs metrics to `experiments/training_log.json`.
+
+## Project Structure
+
+- `src/` — Core implementation (blocks, model, training)
+- `experiments/` — Data and training outputs
+- `notebooks/` — Analysis and visualization
