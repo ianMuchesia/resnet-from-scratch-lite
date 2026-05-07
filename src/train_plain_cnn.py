@@ -4,10 +4,11 @@ import json
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
-from src.resnet_model import MiniResNet
+#from src.resnet_model import MiniResNet
 from src.validation import validate
 from torch.utils.data import Subset
 from src.gradient_hook import get_gradient_hook
+from src.cnn_model import CIFARR10CNN
 
 
 
@@ -49,15 +50,16 @@ print(f"Batch Images Shape: {images.shape}")
 print(f"Batch Labels Shape: {labels.shape}")
 
 
-model = MiniResNet()
+model = CIFARR10CNN()
 
 ##Gradient hook : Register hook for specific layers
 gradients = {}
 #We register them to the main blocks to track the highway
-model.fc.register_full_backward_hook(get_gradient_hook("5_fc",gradients))
-model.Layer3.register_full_backward_hook(get_gradient_hook("4_Layer3",gradients))
-model.Layer2.register_full_backward_hook(get_gradient_hook("3_Layer2",gradients))
-model.Layer1.register_full_backward_hook(get_gradient_hook("2_Layer1",gradients))
+model.fc2.register_full_backward_hook(get_gradient_hook("6_fc2",gradients))
+model.fc1.register_full_backward_hook(get_gradient_hook("5_fc1",gradients))
+model.conv4.register_full_backward_hook(get_gradient_hook("4_conv4",gradients))
+model.conv3.register_full_backward_hook(get_gradient_hook("3_conv3",gradients))
+model.conv2.register_full_backward_hook(get_gradient_hook("2_conv2",gradients))
 model.conv1.register_full_backward_hook(get_gradient_hook("1_conv1",gradients))
 
 criterion = torch.nn.CrossEntropyLoss()
@@ -100,7 +102,8 @@ for epoch in range(epochs):
             
             
         if(1%10==0):   
-            print(f"This is the loss:{loss.item()} at this iteration: {i} at epoch: {epoch+1}")        
+            print(f"This is the loss:{loss.item()} at this iteration: {i} at epoch: {epoch+1}")
+        
         optimizer.step()
         
         
@@ -163,7 +166,7 @@ for epoch in range(epochs):
     if (epoch + 1) % 5 == 0 or avg_loss < best_val_loss:
         pass
     
-with open("./experiments/training_log.json","w") as f:
+with open("./experiments/training_plaincnn_log.json","w") as f:
     json.dump(history, f, indent=4)
     
     
