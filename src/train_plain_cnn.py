@@ -55,11 +55,11 @@ model = CIFARR10CNN()
 ##Gradient hook : Register hook for specific layers
 gradients = {}
 #We register them to the main blocks to track the highway
-model.fc2.register_full_backward_hook(get_gradient_hook("6_fc2",gradients))
-model.fc1.register_full_backward_hook(get_gradient_hook("5_fc1",gradients))
-model.conv4.register_full_backward_hook(get_gradient_hook("4_conv4",gradients))
-model.conv3.register_full_backward_hook(get_gradient_hook("3_conv3",gradients))
-model.conv2.register_full_backward_hook(get_gradient_hook("2_conv2",gradients))
+model.fc2.register_full_backward_hook(get_gradient_hook("5_fc",gradients))
+#model.fc1.register_full_backward_hook(get_gradient_hook("5_fc1",gradients))
+model.conv4.register_full_backward_hook(get_gradient_hook("4_Layer3",gradients))
+model.conv3.register_full_backward_hook(get_gradient_hook("3_Layer2",gradients))
+model.conv2.register_full_backward_hook(get_gradient_hook("2_Layer1",gradients))
 model.conv1.register_full_backward_hook(get_gradient_hook("1_conv1",gradients))
 
 criterion = torch.nn.CrossEntropyLoss()
@@ -73,6 +73,8 @@ epochs = 15
 best_accuracy = 0.0
 history = []
 checkpoint_dir = "experiments/run_latest"
+
+epoch_gradient_history = []
 
 
 for epoch in range(epochs):
@@ -99,10 +101,10 @@ for epoch in range(epochs):
         
         if(i == 0):
             print(f"Gradients at Epoch {epoch+1} :{gradients}")
+            epoch_gradient_history.append(gradients.copy())
             
             
-        if(1%10==0):   
-            print(f"This is the loss:{loss.item()} at this iteration: {i} at epoch: {epoch+1}")
+
         
         optimizer.step()
         
@@ -169,6 +171,11 @@ for epoch in range(epochs):
 with open("./experiments/training_plaincnn_log.json","w") as f:
     json.dump(history, f, indent=4)
     
+with open("./experiments/plain_cnn_loss_log.json","w") as f:
+    json.dump(epoch_gradient_history, f, indent=4)
+    
+    
+
     
     
 

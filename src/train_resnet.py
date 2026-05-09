@@ -71,6 +71,7 @@ epochs = 15
 best_accuracy = 0.0
 history = []
 checkpoint_dir = "experiments/run_latest"
+epoch_gradient_history = []
 
 
 for epoch in range(epochs):
@@ -97,10 +98,10 @@ for epoch in range(epochs):
         
         if(i == 0):
             print(f"Gradients at Epoch {epoch+1} :{gradients}")
+            epoch_gradient_history.append(gradients.copy())
             
             
-        if(1%10==0):   
-            print(f"This is the loss:{loss.item()} at this iteration: {i} at epoch: {epoch+1}")        
+        
         optimizer.step()
         
         
@@ -161,10 +162,16 @@ for epoch in range(epochs):
     
     
     if (epoch + 1) % 5 == 0 or avg_loss < best_val_loss:
-        pass
+        break
     
 with open("./experiments/training_log.json","w") as f:
     json.dump(history, f, indent=4)
+    
+with open("./experiments/resnet_loss_log.json","w") as f:
+    json.dump(epoch_gradient_history, f, indent=4)
+    
+    
+
     
     
     
